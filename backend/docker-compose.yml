@@ -1,0 +1,11 @@
+services:
+  daily.cinema.db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - ${PORT}:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

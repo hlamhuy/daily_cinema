@@ -1,3 +1,4 @@
 export interface PlayerProps {
-  source: string;
+  videoUrl: string;
+  subUrl: string;
 }

@@ -1,0 +1,41 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
+}
+
+.content {
+  flex-grow: 1; /* This will push the disclaimer to the bottom */
+}
+
+.videoplayer {
+  width: 1080px;
+  max-width: 100%;
+  padding: 10px;
+}
+
+.player {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.disclaimer {
+  text-align: center;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555; /* Subtle color for disclaimer text */
+  background-color: #f9f9f9; /* Optional background color */
+  border-top: 1px solid #ccc; /* Optional border to separate the disclaimer */
+}
+
+.disclaimer p {
+  margin: 0; /* Remove any default margin */
+}

@@ -1,5 +1,5 @@
 import VideoPlayer from './components/Player';
-
+import './styles/App.css';
 const App = () => {
   const getFormattedDate = (): string => {
     const date = new Date();
@@ -13,8 +13,22 @@ const App = () => {
   const subUrl = `../${getFormattedDate()}.en.vtt`;
 
   return (
-    <div>
-      <VideoPlayer videoUrl={videoUrl} subUrl={subUrl}></VideoPlayer>
+    <div className='app'>
+      <div className='content'>
+        <div className='player'>
+          <div className='videoplayer'>
+            <VideoPlayer videoUrl={videoUrl} subUrl={subUrl} />
+          </div>
+        </div>
+      </div>
+      <div className='disclaimer'>
+        <p>
+          <b>Disclaimer:</b> This project is intended solely for educational
+          purposes. All media displayed on this site is used in good faith for
+          learning and demonstration. No copyright infringement is intended, and
+          users are advised to comply with applicable copyright laws.
+        </p>
+      </div>
     </div>
   );
 };

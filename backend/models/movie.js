@@ -2,7 +2,7 @@ const { Model, DataTypes } = require('sequelize');
 
 const { sequelize } = require('../utils/db');
 
-class Movie extends Models {}
+class Movie extends Model {}
 Movie.init(
   {
     id: {
@@ -21,6 +21,12 @@ Movie.init(
     imdb_id: {
       type: DataTypes.TEXT,
       allowNull: false,
+      unique: true,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {

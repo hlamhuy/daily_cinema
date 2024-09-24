@@ -1,31 +1,7 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize(process.env.DATABASE_URL);
-const fs = require('fs');
-const path = require('path');
-
-const parseFolderName = (folderName) => {
-  const regex = /(.*) \((\d{4})\) - \{imdb-(tt\d+)\}/;
-  const match = folderName.match(regex);
-  if (match) {
-    const movieName = match[1].trim();
-    const imdbId = match[3].trim();
-    return { movieName, imdbId };
-  }
-  return null;
-};
-
-const insertMovie = async (folderName, movieName, imdbId) => {
-  try {
-    await Movie.create({
-      folder_name: folderName,
-      movie_name: movieName,
-      imdb_id: imdbId,
-    });
-    console.log(`Inserted: ${folderName}`);
-  } catch (err) {
-    console.error('Error inserting data:', err);
-  }
-};
+const { DATABASE_URL } = require('./config');
+const { Umzug, SequelizeStorage } = require('umzug');
+const sequelize = new Sequelize(DATABASE_URL);
 
 const runMigrations = async () => {
   const migrator = new Umzug(migrationConf);
@@ -50,17 +26,17 @@ const rollbackMigration = async () => {
   await migrator.down();
 };
 
-const main = async () => {
+const connectToDatabase = async () => {
   try {
     await sequelize.authenticate();
     await runMigrations();
     console.log('connected to the database');
-    sequelize.close();
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
+  } catch (err) {
+    console.log('failed to connect to the database');
+    return process.exit(1);
   }
+
+  return null;
 };
 
-main();
-
-module.exports = { sequelize };
+module.exports = { connectToDatabase, sequelize, rollbackMigration };

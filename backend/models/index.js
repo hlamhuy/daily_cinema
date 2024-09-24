@@ -1,5 +1,5 @@
 const Movie = require('./movie');
 
-Movie.sync({ alter: true });
+//Movie.sync({ alter: true });
 
 module.exports = { Movie };

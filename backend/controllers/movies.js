@@ -10,6 +10,21 @@ router.get('/', async (req, res) => {
   const movies = await Movie.findAll();
   res.json(movies);
 });
+
+router.get('/id/max', async (req, res) => {
+  const max = await Movie.max('id');
+  if (max === null) return res.status(404).json({ error: 'No movies found' });
+  res.json({ max });
+});
+
+router.get('/id/:id', movieFinder, async (req, res) => {
+  const movie = req.movie;
+  if (!movie) {
+    return res.status(404).json({ error: 'Movie not found' });
+  }
+  res.json(movie);
+});
+
 router.post('/', async (req, res) => {
   const movie = await Movie.create(req.body);
   res.json(movie);

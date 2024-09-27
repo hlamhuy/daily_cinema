@@ -4,8 +4,14 @@ services:
     restart: always
     shm_size: 128mb
     ports:
-      - ${PORT}:5432
+      - ${POSTGRES_PORT}:5432
     volumes:
       - ./data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  api:
+    image: daily.cinema.api
+    build: .
+    ports:
+      - ${BACKEND_PORT}:54320

@@ -16,6 +16,7 @@ data
 public
 certs
 npm
+*.backup
 
 # Editor directories and files
 .vscode/*

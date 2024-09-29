@@ -5,8 +5,9 @@ const { exec } = require('child_process');
 const { PORT, MOVIES_PATH, OUTPUT_PATH } = require('./utils/config');
 const baseUrl = `http://localhost:${PORT}`;
 
-const getId = (max) => {
-  return Math.floor(Math.random() * max);
+const getId = async () => {
+  const response = await axios.get(`${baseUrl}/id/max`);
+  return Math.floor(Math.random() * response.data.max);
 };
 
 const getTomorrowDate = () => {
@@ -20,45 +21,50 @@ const getTomorrowDate = () => {
   return `${year}${month}${day}`;
 };
 
-const getMovie = async () => {
-  let maxId = 0;
+const getMovieData = async () => {
+  const id = await getId();
+  const response = await axios.get(`${baseUrl}/id/${id}`);
 
-  if (!maxId) {
-    const maxData = await axios.get(`${baseUrl}/id/max`);
-    maxId = maxData.data.max;
+  if (response.data.active === true) return response.data;
+  else return getMovieData();
+};
+
+const deactivateMovie = async (imdbId) => {
+  try {
+    await axios.put(`${baseUrl}/${imdbId}`, {
+      active: false,
+    });
+  } catch (error) {
+    console.log(error);
   }
+};
 
-  let movieData = null;
+const transcoding = async (i, o, s) => {
+  const command = `ffmpeg -y -i "${i}" -c:v copy -c:a aac -b:a 192k "${o}" -map 0:s:0 -scodec webvtt "${s}"`;
 
-  for (let i = 0; i < 5; i++) {
-    const id = getId(maxId);
-    const response = await axios.get(`${baseUrl}/id/${id}`);
-    movieData = response.data.folder_name;
-    console.log(movieData);
-    if (movieData) break;
-  }
+  exec(command, (error) => {
+    if (!error) {
+      console.log('Transcoding completed successfully!');
+    } else {
+      console.error(`Error executing ffmpeg: ${error.message}`);
+      return;
+    }
+  });
+};
 
-  process.chdir(`${MOVIES_PATH}/${movieData}`);
+const main = async () => {
+  const data = await getMovieData();
+
+  process.chdir(`${MOVIES_PATH}/${data.folder_name}`);
 
   const files = await fs.readdir(process.cwd());
   const outputFile = path.join(OUTPUT_PATH, `${getTomorrowDate()}.mp4`);
   const outputSub = path.join(OUTPUT_PATH, `${getTomorrowDate()}.en.vtt`);
-  
-  const command = `ffmpeg -i "${files[0]}" -c:v copy -c:a aac -b:a 192k "${outputFile}" -map 0:s:0 -scodec webvtt ${outputSub}`;
 
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing ffmpeg: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`FFmpeg stderr: ${stderr}`);
-      return;
-    }
-    console.log(`FFmpeg stdout: ${stdout}`);
-  });
+  console.log(`Transcoding: ${data.folder_name}`);
+  transcoding(files[0], outputFile, outputSub);
+
+  await deactivateMovie(data.imdb_id);
 };
 
-(async () => {
-  getMovie();
-})();
+main();

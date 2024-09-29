@@ -9,8 +9,8 @@ const App = () => {
     return `${year}${month}${day}`;
   };
 
-  const videoUrl = `../${getFormattedDate()}.mp4`;
-  const subUrl = `../${getFormattedDate()}.en.vtt`;
+  const videoUrl = `./${getFormattedDate()}.mp4`;
+  const subUrl = `./${getFormattedDate()}.en.vtt`;
 
   return (
     <div className='app'>
@@ -20,6 +20,9 @@ const App = () => {
             <VideoPlayer videoUrl={videoUrl} subUrl={subUrl} />
           </div>
         </div>
+        <video controls width='250'>
+          <source src={videoUrl} type='video/mp4' />
+        </video>
       </div>
       <div className='disclaimer'>
         <p>
